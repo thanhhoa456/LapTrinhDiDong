@@ -1,0 +1,21 @@
+<resources>
+    <!-- Theme sáng -->
+    <style name="Theme.A1StudyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="iconTint">@android:color/black</item> <!-- Màu biểu tượng trong theme sáng -->
+    </style>
+
+    <!-- Theme tối -->
+    <style name="Theme.A1StudyApp.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/grey_800</item>
+        <item name="colorPrimaryVariant">@color/grey_900</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:background">@color/grey_900</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:statusBarColor">@color/grey_900</item>
+        <item name="iconTint">@android:color/white</item> <!-- Màu biểu tượng trong theme tối -->
+    </style>
+</resources>

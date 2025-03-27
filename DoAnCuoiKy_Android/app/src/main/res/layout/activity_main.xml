@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Phần quảng cáo -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/adViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"/>
+
+    <!-- Phần danh sách chức năng dùng GridView -->
+    <GridView
+        android:id="@+id/menuGridView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/adViewPager"
+        android:layout_above="@id/settingsButton"
+        android:numColumns="2"
+        android:verticalSpacing="8dp"
+        android:horizontalSpacing="8dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Biểu tượng cài đặt -->
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/settings"
+        android:scaleType="fitCenter"
+        android:padding="4dp"
+        android:background="@null"
+        android:contentDescription="Cài đặt"
+        app:tint="?attr/iconTint"/>
+</RelativeLayout>
