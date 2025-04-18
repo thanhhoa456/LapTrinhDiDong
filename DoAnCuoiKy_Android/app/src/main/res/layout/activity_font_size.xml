@@ -3,15 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp">
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    android:background="#F5F5F5">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Chọn cỡ chữ"
-        android:textSize="@dimen/default_text_size"
-        android:textStyle="bold"/>
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#212121"
+        android:layout_marginBottom="16dp"/>
 
     <SeekBar
         android:id="@+id/fontSizeSeekBar"
@@ -19,21 +22,32 @@
         android:layout_height="wrap_content"
         android:max="30"
         android:progress="16"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:thumbTint="#1976D2"
+        android:progressTint="#1976D2"/>
 
     <TextView
         android:id="@+id/sampleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ví dụ văn bản"
-        android:textSize="@dimen/default_text_size"
-        android:layout_marginTop="20dp"/>
+        android:textSize="16sp"
+        android:textColor="#424242"
+        android:padding="12dp"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
+        android:layout_marginBottom="32dp"/>
 
     <Button
         android:id="@+id/nextButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="Tiếp theo"
-        android:textSize="@dimen/default_text_size"
-        android:layout_marginTop="20dp"/>
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:paddingHorizontal="24dp"
+        android:backgroundTint="#1976D2"
+        android:textColor="#FFFFFF"
+        android:elevation="4dp"/>
 </LinearLayout>
