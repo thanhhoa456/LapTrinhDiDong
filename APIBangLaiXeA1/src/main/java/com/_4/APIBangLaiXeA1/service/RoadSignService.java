@@ -18,7 +18,4 @@ public class RoadSignService {
     public List<RoadSign> getAllRoadSignsWithGroup() {
         return roadSignRepo.findAllWithGroup();
     }
-    public List<RoadSign> getRoadSignsByGroupId(int groupId) {
-        return roadSignRepo.findByRoadSignGroupId(groupId);
-    }
 }
