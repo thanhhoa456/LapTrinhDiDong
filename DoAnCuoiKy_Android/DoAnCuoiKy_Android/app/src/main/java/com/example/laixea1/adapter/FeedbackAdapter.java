@@ -1,5 +1,6 @@
 package com.example.laixea1.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class FeedbackAdapter extends RecyclerView.Adapter<FeedbackAdapter.Feedba
     @Override
     public void onBindViewHolder(@NonNull FeedbackViewHolder holder, int position) {
         FeedbackDTO feedback = feedbackList.get(position);
+        Log.d("FeedbackAdapter", "Hiển thị: id=" + feedback.getId() + ", soSao=" + feedback.getSoSao());
         holder.textViewUserId.setText("User ID: " + feedback.getUserId());
         holder.ratingBarFeedback.setRating(feedback.getSoSao());
         holder.textViewNoiDung.setText(feedback.getNoiDung());

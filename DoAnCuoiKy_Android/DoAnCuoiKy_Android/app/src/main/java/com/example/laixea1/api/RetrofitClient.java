@@ -17,13 +17,16 @@ public class RetrofitClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
+                    .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS) // Tăng timeout
+                    .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                    .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                     .build();
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(Question.class, new QuestionDeserializer());
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8080/api/")
+                    .baseUrl("http://10.0.2.2:8080/api/") // Hoặc http://10.0.2.2:8080/api/ nếu dùng emulator
                     .addConverterFactory(GsonConverterFactory.create(gsonBuilder.create()))
                     .client(client)
                     .build();
@@ -35,7 +38,6 @@ public class RetrofitClient {
         return getRetrofit().create(serviceClass);
     }
 
-    // Optional: Keep a specific method for ApiService if needed elsewhere
     public static ApiService getApiService() {
         return createService(ApiService.class);
     }
