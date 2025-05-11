@@ -20,4 +20,8 @@ public class RoadSignController {
     public List<RoadSign> getAllRoadSignsWithGroup() {
         return roadSignService.getAllRoadSignsWithGroup();
     }
+    @GetMapping("/group/{groupId}")
+    public List<RoadSign> getRoadSignsByGroupId(@PathVariable int groupId) {
+        return roadSignService.getRoadSignsByGroupId(groupId);
+    }
 }
