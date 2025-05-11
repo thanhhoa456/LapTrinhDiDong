@@ -32,4 +32,9 @@ public class RoadSign {
     @Lob
     @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
+
+    @ManyToOne
+    @JoinColumn(name = "rs_group_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private RoadSignGroup roadSignGroup;
+
 }

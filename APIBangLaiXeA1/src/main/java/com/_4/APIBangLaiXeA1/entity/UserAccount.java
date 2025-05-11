@@ -19,9 +19,12 @@ public class UserAccount {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "user_name", nullable = false, unique = true)
-    private String userName;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "is_verified", nullable = false)
+    private boolean isVerified = false;
 }
