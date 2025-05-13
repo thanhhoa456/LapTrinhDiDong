@@ -96,10 +96,12 @@ public class MainActivity extends BaseActivity {
                     // TODO: Chuyển sang màn hình Thi sát hạch
                     break;
                 case 2:
-                    // TODO: Chuyển sang màn hình Biển báo
+                    Intent roadSignIntent = new Intent(MainActivity.this, RoadSignActivity.class);
+                    startActivity(roadSignIntent);
                     break;
                 case 3:
-                    // TODO: Chuyển sang màn hình Mẹo thi
+                    Intent tipsIntent = new Intent(MainActivity.this, TipsActivity.class);
+                    startActivity(tipsIntent);
                     break;
                 case 4:
                     // TODO: Chuyển sang màn hình Các câu sai
