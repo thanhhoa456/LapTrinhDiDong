@@ -19,15 +19,9 @@
         <!-- android:name=".activity.FeedbackActivity" -->
         <!-- android:exported="false" /> -->
         <activity
-<<<<<<< HEAD:DoAnCuoiKy_Android/DoAnCuoiKy_Android/app/src/main/AndroidManifest.xml
-            android:name=".activity.FeedbackActivity"
-            android:exported="true"
-            android:theme="@style/Theme.A1StudyApp">
-=======
             android:name=".activity.LoginActivity"
             android:exported="true"
             >
->>>>>>> dde7ba4 (dung sqlite):DoAnCuoiKy_Android/app/src/main/AndroidManifest.xml
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
