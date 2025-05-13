@@ -1,0 +1,106 @@
+[
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_theme.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_theme.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_tip.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_tip.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_theory.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_theory.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_login.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_signup.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_signup.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_font_size.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_font_size.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_category.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_category.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_verify_otp.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_verify_otp.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\fragment_road_sign.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\fragment_road_sign.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_feedback.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_feedback.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_reset_password.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_reset_password.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_theory.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_theory.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_feedback.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_feedback.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_road_sign.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_road_sign.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_forgot_password.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_forgot_password.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_settings.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\fragment_question.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\fragment_question.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\grid_item_menu.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\grid_item_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_ad.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_ad.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_tips.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_tips.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_question_number.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_question_number.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\road_sign_item.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\road_sign_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\activity_quiz.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\activity_quiz.xml"
+    },
+    {
+        "merged": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-mergeDebugResources-32:\\layout\\item_answer.xml",
+        "source": "C:\\Users\\daont\\.gradle\\daemon\\8.10.2\\com.example.laixea1.app-main-35:\\layout\\item_answer.xml"
+    },
+    {
+        "merged": "com.example.laixea1.app-mergeDebugResources-32:/layout/activity_tips.xml",
+        "source": "com.example.laixea1.app-main-35:/layout/activity_tips.xml"
+    }
+]
