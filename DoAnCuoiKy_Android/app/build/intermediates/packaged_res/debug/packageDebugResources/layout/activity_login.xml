@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            android:layout_margin="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome Back!"
+                    android:textColor="@color/primary"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Email Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:hintTextColor="@color/primary"
+                    app:boxStrokeColor="@color/primary"
+                    app:boxBackgroundColor="#E8EAF6"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusTopStart="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                        android:textColor="#212121" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:hintTextColor="@color/primary"
+                    app:boxStrokeColor="@color/primary"
+                    app:boxBackgroundColor="#E8EAF6"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusTopStart="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textColor="#212121" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Remember Me Checkbox -->
+                <CheckBox
+                    android:id="@+id/remember_me"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Remember Me"
+                    android:textColor="@color/primary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Login Button -->
+                <Button
+                    android:id="@+id/login_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Login"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/rounded_button" />
+
+                <!-- Guest Button -->
+                <Button
+                    android:id="@+id/guest_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Continue as Guest"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/rounded_button" />
+
+                <!-- Link to Signup -->
+                <TextView
+                    android:id="@+id/signup_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Don't have an account? Sign Up"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:layout_gravity="center"
+                    android:padding="8dp" />
+
+                <!-- Link to Forgot Password -->
+                <TextView
+                    android:id="@+id/forgot_password_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Forgot Password?"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:layout_gravity="center"
+                    android:padding="8dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>

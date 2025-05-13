@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="green">#7DDA58</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+    <color name="primary">#EC4213</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="red">#D20103</color>
+    <color name="white">#FFFFFFFF</color>
+    <dimen name="default_text_size">16sp</dimen>
+    <string name="app_name">LaiXeA1</string>
+    <style name="Base.Theme.LaiXeA1" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/primary</item>
+
+    </style>
+    <style name="Theme.A1StudyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="iconTint">@android:color/black</item> 
+    </style>
+    <style name="Theme.A1StudyApp.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/grey_800</item>
+        <item name="colorPrimaryVariant">@color/grey_900</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:background">@color/grey_900</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:statusBarColor">@color/grey_900</item>
+        <item name="iconTint">@android:color/white</item> 
+    </style>
+    <style name="Theme.LaiXeA1" parent="Base.Theme.LaiXeA1"/>
+</resources>

@@ -1,0 +1,36 @@
+com.example.laixea1.app-appcompat-resources-1.7.0-0 C:\Users\daont\.gradle\caches\8.10.2\transforms\037f6c5ff3eb40fe9921c12384404da6\transformed\appcompat-resources-1.7.0\res
+com.example.laixea1.app-appcompat-1.7.0-1 C:\Users\daont\.gradle\caches\8.10.2\transforms\092ca4e6924ca02b7a8eaaebc2d0e01c\transformed\appcompat-1.7.0\res
+com.example.laixea1.app-lifecycle-livedata-2.6.2-2 C:\Users\daont\.gradle\caches\8.10.2\transforms\15039800d3b7aab892783002b16dae23\transformed\lifecycle-livedata-2.6.2\res
+com.example.laixea1.app-profileinstaller-1.4.0-3 C:\Users\daont\.gradle\caches\8.10.2\transforms\1821bc22c95036b6388e1b82c75e1e93\transformed\profileinstaller-1.4.0\res
+com.example.laixea1.app-material-1.12.0-4 C:\Users\daont\.gradle\caches\8.10.2\transforms\2abc174d8d99088c9c23f3baf2ba5ddd\transformed\material-1.12.0\res
+com.example.laixea1.app-lifecycle-viewmodel-savedstate-2.6.2-5 C:\Users\daont\.gradle\caches\8.10.2\transforms\31d53ebff5958a7b24707190abdb6c89\transformed\lifecycle-viewmodel-savedstate-2.6.2\res
+com.example.laixea1.app-viewpager2-1.0.0-6 C:\Users\daont\.gradle\caches\8.10.2\transforms\4374ccdc8f7017ca1fa2e55b36d2fabc\transformed\viewpager2-1.0.0\res
+com.example.laixea1.app-transition-1.5.0-7 C:\Users\daont\.gradle\caches\8.10.2\transforms\474cb532cbb25d9899973458f4cf33ae\transformed\transition-1.5.0\res
+com.example.laixea1.app-drawerlayout-1.1.1-8 C:\Users\daont\.gradle\caches\8.10.2\transforms\48ddce58b13dd50690344de3051b12af\transformed\drawerlayout-1.1.1\res
+com.example.laixea1.app-cardview-1.0.0-9 C:\Users\daont\.gradle\caches\8.10.2\transforms\4e15bcc272e53ca543f115958f256619\transformed\cardview-1.0.0\res
+com.example.laixea1.app-annotation-experimental-1.4.0-10 C:\Users\daont\.gradle\caches\8.10.2\transforms\4fdd1f1a44fa87a663608c4c491839ef\transformed\annotation-experimental-1.4.0\res
+com.example.laixea1.app-activity-1.10.1-11 C:\Users\daont\.gradle\caches\8.10.2\transforms\5d65f773500e7407d832eda859e94e6d\transformed\activity-1.10.1\res
+com.example.laixea1.app-emoji2-views-helper-1.3.0-12 C:\Users\daont\.gradle\caches\8.10.2\transforms\6d2699e1f08a9116c521a8fbf697f6fb\transformed\emoji2-views-helper-1.3.0\res
+com.example.laixea1.app-startup-runtime-1.1.1-13 C:\Users\daont\.gradle\caches\8.10.2\transforms\6f66431d6a0d254c9a386cf71240b0ff\transformed\startup-runtime-1.1.1\res
+com.example.laixea1.app-coordinatorlayout-1.1.0-14 C:\Users\daont\.gradle\caches\8.10.2\transforms\78dd082f01ef399aeeb0b11389ae6815\transformed\coordinatorlayout-1.1.0\res
+com.example.laixea1.app-lifecycle-livedata-core-2.6.2-15 C:\Users\daont\.gradle\caches\8.10.2\transforms\808065214af91b672e15541ca3636546\transformed\lifecycle-livedata-core-2.6.2\res
+com.example.laixea1.app-core-viewtree-1.0.0-16 C:\Users\daont\.gradle\caches\8.10.2\transforms\80c0d7dc6518c51522d8470ccb5513da\transformed\core-viewtree-1.0.0\res
+com.example.laixea1.app-lifecycle-viewmodel-2.6.2-17 C:\Users\daont\.gradle\caches\8.10.2\transforms\90de9ce662c9ad706dbbda1f2c8d7a7d\transformed\lifecycle-viewmodel-2.6.2\res
+com.example.laixea1.app-constraintlayout-2.2.1-18 C:\Users\daont\.gradle\caches\8.10.2\transforms\9632b46d578ff64dd9f89fd5797fa7fa\transformed\constraintlayout-2.2.1\res
+com.example.laixea1.app-core-runtime-2.2.0-19 C:\Users\daont\.gradle\caches\8.10.2\transforms\a674fe05a79980407b4bb90a01795a86\transformed\core-runtime-2.2.0\res
+com.example.laixea1.app-lifecycle-runtime-2.6.2-20 C:\Users\daont\.gradle\caches\8.10.2\transforms\a886cb4f655937083ea24396352ca5e6\transformed\lifecycle-runtime-2.6.2\res
+com.example.laixea1.app-recyclerview-1.1.0-21 C:\Users\daont\.gradle\caches\8.10.2\transforms\b8ca35aed6086a5b7d93a3ce389b1769\transformed\recyclerview-1.1.0\res
+com.example.laixea1.app-savedstate-1.2.1-22 C:\Users\daont\.gradle\caches\8.10.2\transforms\bcf70ce88b06178e07cf619d256a6717\transformed\savedstate-1.2.1\res
+com.example.laixea1.app-lifecycle-process-2.6.2-23 C:\Users\daont\.gradle\caches\8.10.2\transforms\c69f6bc1e2918d04bf9d8d3e73bbe073\transformed\lifecycle-process-2.6.2\res
+com.example.laixea1.app-emoji2-1.3.0-24 C:\Users\daont\.gradle\caches\8.10.2\transforms\cd1ee338623421501c1360e82e0adbcd\transformed\emoji2-1.3.0\res
+com.example.laixea1.app-core-1.13.0-25 C:\Users\daont\.gradle\caches\8.10.2\transforms\cdea54263b37e4daf12bc0c1dd3400cd\transformed\core-1.13.0\res
+com.example.laixea1.app-glide-4.12.0-26 C:\Users\daont\.gradle\caches\8.10.2\transforms\d300c8c66892caa8e25006a8dc768512\transformed\glide-4.12.0\res
+com.example.laixea1.app-fragment-1.5.4-27 C:\Users\daont\.gradle\caches\8.10.2\transforms\d9ef02ff91dcb789ea33019e3622c26c\transformed\fragment-1.5.4\res
+com.example.laixea1.app-core-ktx-1.13.0-28 C:\Users\daont\.gradle\caches\8.10.2\transforms\f6245915937fe67a9a8ab701ebbf080c\transformed\core-ktx-1.13.0\res
+com.example.laixea1.app-pngs-29 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\build\generated\res\pngs\debug
+com.example.laixea1.app-resValues-30 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\build\generated\res\resValues\debug
+com.example.laixea1.app-packageDebugResources-31 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.laixea1.app-packageDebugResources-32 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.laixea1.app-debug-33 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.laixea1.app-debug-34 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\src\debug\res
+com.example.laixea1.app-main-35 F:\HK6\LTDD\New folder (2)\LapTrinhDiDong\DoAnCuoiKy_Android\app\src\main\res
