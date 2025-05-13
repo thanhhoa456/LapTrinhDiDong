@@ -1,5 +1,7 @@
 package com.example.laixea1.adapter;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,17 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.laixea1.R;
+import com.example.laixea1.database.DatabaseHelper;
 import com.example.laixea1.dto.QuestionDTO;
-import com.example.laixea1.entity.Answer;
 
 import java.util.List;
-import java.util.Map;
 
 public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAdapter.ViewHolder> {
     private List<Integer> questionNumbers;
     private int currentQuestionIndex;
     private List<QuestionDTO> questionList;
-    private Map<Integer, List<Answer>> answerCache;
+    private String currentUser;
+    private DatabaseHelper dbHelper;
     private OnQuestionNumberClickListener listener;
 
     public interface OnQuestionNumberClickListener {
@@ -29,11 +31,12 @@ public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAd
     }
 
     public QuestionNumberAdapter(List<Integer> questionNumbers, int currentQuestionIndex, List<QuestionDTO> questionList,
-                                 Map<Integer, List<Answer>> answerCache, OnQuestionNumberClickListener listener) {
+                                 String currentUser, DatabaseHelper dbHelper, OnQuestionNumberClickListener listener) {
         this.questionNumbers = questionNumbers;
         this.currentQuestionIndex = currentQuestionIndex;
         this.questionList = questionList;
-        this.answerCache = answerCache;
+        this.currentUser = currentUser;
+        this.dbHelper = dbHelper;
         this.listener = listener;
     }
 
@@ -55,37 +58,24 @@ public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAd
         holder.numberText.setText(String.valueOf(number));
         holder.numberText.setSelected(position == currentQuestionIndex);
 
-        // Kiểm tra trạng thái câu hỏi từ answerCache
+        // Kiểm tra trạng thái câu hỏi từ SQLite
         if (position < questionList.size()) {
             int questionId = questionList.get(position).getId();
-            Log.d("QuestionNumberAdapter", "Position: " + position + ", Question ID: " + questionId);
-
-            List<Answer> answers = answerCache.get(questionId);
-            if (answers != null) {
-                Log.d("QuestionNumberAdapter", "Answers found for Question ID: " + questionId + ", Size: " + answers.size());
-                boolean hasSelected = false;
-                boolean isCorrect = false;
-                for (Answer answer : answers) {
-                    Log.d("QuestionNumberAdapter", "Answer: " + answer.getText() + ", isSelected: " + answer.isSelected() + ", isCorrect: " + answer.isCorrect());
-                    if (answer.isSelected()) {
-                        hasSelected = true;
-                        isCorrect = answer.isCorrect();
-                        break;
-                    }
-                }
-                if (hasSelected) {
-                    Log.d("QuestionNumberAdapter", "Question " + questionId + " has selected answer, isCorrect: " + isCorrect);
-                    holder.statusImage.setImageResource(isCorrect ? R.drawable.check : R.drawable.delete);
-                    holder.statusImage.setVisibility(View.VISIBLE);
-
-                } else {
-                    Log.d("QuestionNumberAdapter", "Question " + questionId + " has no selected answer");
-                    holder.statusImage.setVisibility(View.GONE);
-                }
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String query = "SELECT selectedAnswer, isCorrect FROM UserProgress WHERE userId = ? AND questionId = ?";
+            Cursor cursor = db.rawQuery(query, new String[]{currentUser, String.valueOf(questionId)});
+            if (cursor.moveToFirst()) {
+                int selectedAnswer = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
+                boolean isCorrect = cursor.getInt(cursor.getColumnIndexOrThrow("isCorrect")) == 1;
+                holder.statusImage.setImageResource(isCorrect ? R.drawable.check : R.drawable.delete);
+                holder.statusImage.setVisibility(View.VISIBLE);
+                Log.d("QuestionNumberAdapter", "Question " + questionId + " has selected answer: " + selectedAnswer + ", isCorrect: " + isCorrect);
             } else {
-                Log.d("QuestionNumberAdapter", "No answers found in answerCache for Question ID: " + questionId);
                 holder.statusImage.setVisibility(View.GONE);
+                Log.d("QuestionNumberAdapter", "No answer found for question " + questionId);
             }
+            cursor.close();
+            db.close();
         } else {
             Log.d("QuestionNumberAdapter", "Position " + position + " exceeds questionList size: " + questionList.size());
             holder.statusImage.setVisibility(View.GONE);

@@ -1,5 +1,9 @@
 package com.example.laixea1.fragment;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,24 +20,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.laixea1.R;
 import com.example.laixea1.adapter.AnswerAdapter;
+import com.example.laixea1.database.DatabaseHelper;
 import com.example.laixea1.dto.QuestionDTO;
 import com.example.laixea1.entity.Answer;
-import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class QuestionFragment extends Fragment {
 
     private static final String ARG_QUESTION = "question";
     private static final String ARG_QUESTION_ID = "question_id";
-    private static final String ARG_ANSWER_CACHE = "answer_cache";
+    private static final String ARG_CURRENT_USER = "current_user";
 
     private QuestionDTO question;
     private int currentQuestionId;
-    private Map<Integer, List<Answer>> answerCache;
+    private String currentUser;
+    private DatabaseHelper dbHelper;
     private List<Answer> answerList;
     private AnswerAdapter answerAdapter;
     private TextView explanationText;
@@ -43,12 +47,12 @@ public class QuestionFragment extends Fragment {
         void onAnswerSelected();
     }
 
-    public static QuestionFragment newInstance(QuestionDTO question, int questionId, Map<Integer, List<Answer>> answerCache) {
+    public static QuestionFragment newInstance(QuestionDTO question, int questionId, String currentUser) {
         QuestionFragment fragment = new QuestionFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_QUESTION, question);
         args.putInt(ARG_QUESTION_ID, questionId);
-        args.putSerializable(ARG_ANSWER_CACHE, (HashMap<Integer, List<Answer>>) answerCache);
+        args.putString(ARG_CURRENT_USER, currentUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,8 +63,10 @@ public class QuestionFragment extends Fragment {
         if (getArguments() != null) {
             question = (QuestionDTO) getArguments().getSerializable(ARG_QUESTION);
             currentQuestionId = getArguments().getInt(ARG_QUESTION_ID);
-            answerCache = (Map<Integer, List<Answer>>) getArguments().getSerializable(ARG_ANSWER_CACHE);
+            currentUser = getArguments().getString(ARG_CURRENT_USER);
         }
+        // Khởi tạo DatabaseHelper
+        dbHelper = new DatabaseHelper(getContext());
     }
 
     @Nullable
@@ -80,81 +86,73 @@ public class QuestionFragment extends Fragment {
         if (question != null && question.getQuestion() != null) {
             questionText.setText(question.getQuestion());
         } else {
-            questionText.setText("No question text available");
+            questionText.setText("Không có nội dung câu hỏi");
             Log.w("QuestionFragment", "Question text is null for question " + currentQuestionId);
         }
 
         // Load image if available
         if (question != null && question.getImage() != null && !question.getImage().isEmpty()) {
-            Picasso.get()
-                    .load(question.getImage())
-                    .into(questionImage, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d("QuestionFragment", "Image loaded successfully for question " + currentQuestionId);
-                            questionImage.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-                            Log.e("QuestionFragment", "Error loading image for question " + currentQuestionId + ": " + e.getMessage());
-                            questionImage.setVisibility(View.GONE);
-                        }
-                    });
+            Log.d("QuestionFragment", "Attempting to load image: " + question.getImage() + " for question " + currentQuestionId);
+            File imageFile = new File(question.getImage());
+            if (imageFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                if (bitmap != null) {
+                    questionImage.setImageBitmap(bitmap);
+                    questionImage.setVisibility(View.VISIBLE);
+                    Log.d("QuestionFragment", "Image loaded successfully: " + question.getImage());
+                } else {
+                    Log.w("QuestionFragment", "Failed to decode bitmap from file: " + question.getImage());
+                    questionImage.setVisibility(View.GONE);
+                }
+            } else {
+                Log.w("QuestionFragment", "Image file not found: " + question.getImage());
+                questionImage.setVisibility(View.GONE);
+            }
         } else {
             Log.d("QuestionFragment", "No image available for question " + currentQuestionId);
             questionImage.setVisibility(View.GONE);
         }
 
-        // Initialize answer list
+        // Initialize answer list with actual number of options
         answerList = new ArrayList<>();
         if (question != null) {
-            // Tạo danh sách các đáp án từ option1, option2, option3, option4
             List<String> options = new ArrayList<>();
-            if (question.getOption1() != null) options.add(question.getOption1());
-            if (question.getOption2() != null) options.add(question.getOption2());
-            if (question.getOption3() != null) options.add(question.getOption3());
-            if (question.getOption4() != null) options.add(question.getOption4());
+            if (question.getOption1() != null && !question.getOption1().isEmpty()) options.add(question.getOption1());
+            if (question.getOption2() != null && !question.getOption2().isEmpty()) options.add(question.getOption2());
+            if (question.getOption3() != null && !question.getOption3().isEmpty()) options.add(question.getOption3());
+            if (question.getOption4() != null && !question.getOption4().isEmpty()) options.add(question.getOption4());
 
-            // Đáp án đúng dựa trên answer (giá trị int từ 1 đến 4)
-            int correctAnswerIndex = question.getAnswer() - 1; // Chuyển từ 1-based index sang 0-based index
+            Log.d("QuestionFragment", "Number of options for question " + currentQuestionId + ": " + options.size());
+            int correctAnswerIndex = question.getAnswer() - 1;
             for (int i = 0; i < options.size(); i++) {
-                boolean isCorrect = (i == correctAnswerIndex);
+                boolean isCorrect = (i == correctAnswerIndex && correctAnswerIndex < options.size());
                 answerList.add(new Answer(options.get(i), isCorrect));
             }
         } else {
             Log.w("QuestionFragment", "Question is null for question " + currentQuestionId);
         }
 
-        // Restore selected answers from cache if available
-        List<Answer> cachedAnswers = answerCache.get(currentQuestionId);
-        if (cachedAnswers != null) {
-            Log.d("QuestionFragment", "Restoring answers from cache for question " + currentQuestionId);
-            answerList = new ArrayList<>(cachedAnswers); // Tạo bản sao để tránh thay đổi trực tiếp cache
-            for (Answer answer : answerList) {
-                Log.d("QuestionFragment", "Restored answer: " + answer.getText() + ", isSelected: " + answer.isSelected());
-            }
-        } else {
-            Log.d("QuestionFragment", "No cached answers for question " + currentQuestionId);
-            for (Answer answer : answerList) {
-                Log.d("QuestionFragment", "Initial answer: " + answer.getText() + ", isSelected: " + answer.isSelected());
-            }
-        }
-
-        // Debug answerCache state
-        Log.d("QuestionFragment", "Current state of answerCache before display: ");
-        for (Map.Entry<Integer, List<Answer>> entry : answerCache.entrySet()) {
-            Log.d("QuestionFragment", "Question ID: " + entry.getKey());
-            for (Answer answer : entry.getValue()) {
-                Log.d("QuestionFragment", "Answer: " + answer.getText() + ", isSelected: " + answer.isSelected());
+        // Restore selected answers from SQLite
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT selectedAnswer FROM UserProgress WHERE userId = ? AND questionId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{currentUser, String.valueOf(currentQuestionId)});
+        if (cursor.moveToFirst()) {
+            int selectedAnswerIndex = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
+            if (selectedAnswerIndex >= 0 && selectedAnswerIndex < answerList.size()) {
+                answerList.get(selectedAnswerIndex).setSelected(true);
+                Log.d("QuestionFragment", "Restored selected answer: " + selectedAnswerIndex);
+            } else {
+                Log.w("QuestionFragment", "Invalid selectedAnswerIndex: " + selectedAnswerIndex + " for question " + currentQuestionId);
             }
         }
+        cursor.close();
+        db.close();
 
         // Initialize RecyclerView for answers
         answerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         answerAdapter = new AnswerAdapter(getContext(), R.layout.item_answer, answerList,
                 question != null ? question.getExplainQuestion() : null,
-                explanationText, currentQuestionId, answerCache, answerSelectedListener);
+                explanationText, currentQuestionId, currentUser, dbHelper, answerSelectedListener);
         answerRecyclerView.setAdapter(answerAdapter);
 
         return view;
@@ -164,6 +162,14 @@ public class QuestionFragment extends Fragment {
         this.answerSelectedListener = listener;
         if (answerAdapter != null) {
             answerAdapter.setAnswerSelectedListener(listener);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (dbHelper != null) {
+            dbHelper.close();
         }
     }
 }
