@@ -2,6 +2,6 @@
 <network-security-config>
     <!-- Cho phép kết nối HTTP cho tất cả các domain -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.1.8</domain> <!-- Thêm IP hoặc domain của bạn -->
+        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Thêm IP hoặc domain của bạn -->
     </domain-config>
 </network-security-config>
