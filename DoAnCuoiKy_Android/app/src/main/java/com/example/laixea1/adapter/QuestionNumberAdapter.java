@@ -16,15 +16,28 @@ import com.example.laixea1.R;
 import com.example.laixea1.database.DatabaseHelper;
 import com.example.laixea1.dto.QuestionDTO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAdapter.ViewHolder> {
     private List<Integer> questionNumbers;
     private int currentQuestionIndex;
     private List<QuestionDTO> questionList;
-    private String currentUser;
-    private DatabaseHelper dbHelper;
+    protected String currentUser;
+    protected DatabaseHelper dbHelper;
     private OnQuestionNumberClickListener listener;
+    private Map<Integer, UserProgress> userProgressMap;
+
+    static class UserProgress {
+        int selectedAnswer;
+        boolean isCorrect;
+
+        UserProgress(int selectedAnswer, boolean isCorrect) {
+            this.selectedAnswer = selectedAnswer;
+            this.isCorrect = isCorrect;
+        }
+    }
 
     public interface OnQuestionNumberClickListener {
         void onQuestionNumberClick(int position);
@@ -38,6 +51,23 @@ public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAd
         this.currentUser = currentUser;
         this.dbHelper = dbHelper;
         this.listener = listener;
+        this.userProgressMap = new HashMap<>();
+        loadUserProgress();
+    }
+
+    private void loadUserProgress() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT questionId, selectedAnswer, isCorrect FROM UserProgress WHERE userId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{currentUser});
+        while (cursor.moveToNext()) {
+            int questionId = cursor.getInt(cursor.getColumnIndexOrThrow("questionId"));
+            int selectedAnswer = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
+            boolean isCorrect = cursor.getInt(cursor.getColumnIndexOrThrow("isCorrect")) == 1;
+            userProgressMap.put(questionId, new UserProgress(selectedAnswer, isCorrect));
+        }
+        cursor.close();
+        db.close();
+        Log.d("QuestionNumberAdapter", "Loaded user progress for " + userProgressMap.size() + " questions");
     }
 
     public void setCurrentQuestionIndex(int currentQuestionIndex) {
@@ -45,6 +75,10 @@ public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAd
         notifyDataSetChanged();
     }
 
+    public void updateProgress(int questionId, int selectedAnswer, boolean isCorrect) {
+        userProgressMap.put(questionId, new UserProgress(selectedAnswer, isCorrect));
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,24 +92,17 @@ public class QuestionNumberAdapter extends RecyclerView.Adapter<QuestionNumberAd
         holder.numberText.setText(String.valueOf(number));
         holder.numberText.setSelected(position == currentQuestionIndex);
 
-        // Kiểm tra trạng thái câu hỏi từ SQLite
         if (position < questionList.size()) {
             int questionId = questionList.get(position).getId();
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            String query = "SELECT selectedAnswer, isCorrect FROM UserProgress WHERE userId = ? AND questionId = ?";
-            Cursor cursor = db.rawQuery(query, new String[]{currentUser, String.valueOf(questionId)});
-            if (cursor.moveToFirst()) {
-                int selectedAnswer = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
-                boolean isCorrect = cursor.getInt(cursor.getColumnIndexOrThrow("isCorrect")) == 1;
-                holder.statusImage.setImageResource(isCorrect ? R.drawable.check : R.drawable.delete);
+            UserProgress progress = userProgressMap.get(questionId);
+            if (progress != null) {
+                holder.statusImage.setImageResource(progress.isCorrect ? R.drawable.check : R.drawable.delete);
                 holder.statusImage.setVisibility(View.VISIBLE);
-                Log.d("QuestionNumberAdapter", "Question " + questionId + " has selected answer: " + selectedAnswer + ", isCorrect: " + isCorrect);
+                Log.d("QuestionNumberAdapter", "Question " + questionId + " has selected answer: " + progress.selectedAnswer + ", isCorrect: " + progress.isCorrect);
             } else {
                 holder.statusImage.setVisibility(View.GONE);
                 Log.d("QuestionNumberAdapter", "No answer found for question " + questionId);
             }
-            cursor.close();
-            db.close();
         } else {
             Log.d("QuestionNumberAdapter", "Position " + position + " exceeds questionList size: " + questionList.size());
             holder.statusImage.setVisibility(View.GONE);

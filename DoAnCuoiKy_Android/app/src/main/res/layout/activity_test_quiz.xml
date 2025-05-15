@@ -14,7 +14,13 @@
         android:gravity="center_vertical"
         android:layout_alignParentTop="true">
 
-
+        <ImageButton
+            android:id="@+id/headerBtnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/back"
+            android:background="@null"
+            android:contentDescription="Back" />
 
         <TextView
             android:id="@+id/titleText"
@@ -27,10 +33,25 @@
             android:textColor="#000000"
             android:padding="8dp" />
 
+        <TextView
+            android:id="@+id/timerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FF0000"
+            android:padding="8dp" />
 
+        <ImageButton
+            android:id="@+id/headerBtnForward"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/forward"
+            android:background="@null"
+            android:contentDescription="Forward" />
     </LinearLayout>
 
-    <!-- Main content with ViewPager2 -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/questionPager"
         android:layout_width="match_parent"
@@ -38,7 +59,6 @@
         android:layout_below="@id/headerLayout"
         android:layout_above="@id/footerLayout" />
 
-    <!-- Layout danh sách số câu hỏi -->
     <LinearLayout
         android:id="@+id/questionNumberLayout"
         android:layout_width="match_parent"
@@ -68,7 +88,6 @@
             android:padding="8dp" />
     </LinearLayout>
 
-    <!-- Footer -->
     <LinearLayout
         android:id="@+id/footerLayout"
         android:layout_width="match_parent"
@@ -78,16 +97,6 @@
         android:background="#F0F0F0"
         android:orientation="vertical"
         android:gravity="center_horizontal">
-
-        <Button
-            android:id="@+id/speakButton"
-            android:layout_width="149dp"
-            android:layout_height="37dp"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/speak_button_background"
-            android:text="Đọc"
-            android:textColor="#FFFFFF" /> <!-- Positioned to the left -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -147,6 +156,31 @@
                 android:background="@null"
                 android:contentDescription="Forward" />
         </LinearLayout>
-    </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nộp bài"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#00BCD4"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/retryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Làm lại"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF5722" />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

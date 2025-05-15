@@ -12,9 +12,9 @@ import com.example.laixea1.fragment.QuestionFragment;
 import java.util.List;
 
 public class QuestionPagerAdapter extends FragmentStateAdapter {
-    private final List<QuestionDTO> questionList;
-    private final String currentUser;
-    private final QuestionFragment.OnAnswerSelectedListener answerSelectedListener;
+    protected final List<QuestionDTO> questionList;
+    protected final String currentUser;
+    protected final QuestionFragment.OnAnswerSelectedListener answerSelectedListener;
 
     public QuestionPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<QuestionDTO> questionList,
                                 String currentUser, QuestionFragment.OnAnswerSelectedListener listener) {

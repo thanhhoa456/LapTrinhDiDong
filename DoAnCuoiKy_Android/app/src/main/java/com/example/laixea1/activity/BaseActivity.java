@@ -1,51 +1,48 @@
 package com.example.laixea1.activity;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.laixea1.R;
 
-public class BaseActivity extends AppCompatActivity {
-    private static final String PREFS_NAME = "A1StudyPrefs";
-    private static final String KEY_THEME = "theme";
+public abstract class BaseActivity extends AppCompatActivity {
+
+    protected String currentUser;
+    protected static final String PREF_NAME = "Settings_";
     private static final String KEY_FONT_SIZE = "fontSize";
+    private static final int DEFAULT_FONT_SIZE = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String theme = prefs.getString(KEY_THEME, "light");
-        if (theme.equals("dark")) {
-            setTheme(R.style.Theme_A1StudyApp_Dark);
-        } else {
-            setTheme(R.style.Theme_A1StudyApp);
-        }
         super.onCreate(savedInstanceState);
+        SharedPreferences appPrefs = getSharedPreferences("App_Settings", MODE_PRIVATE);
+        currentUser = appPrefs.getString("current_user", "Guest");
     }
 
     @Override
-    public void setContentView(int layoutResID) {
-        setTheme(R.style.Theme_LaiXeA1);
-        super.setContentView(layoutResID);
-        applyFontSize(findViewById(android.R.id.content));
+    protected void onResume() {
+        super.onResume();
+        if (!currentUser.equals("Guest")) {
+            applyFontSizeToViews(findViewById(android.R.id.content));
+        }
     }
 
-    private void applyFontSize(View view) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int fontSize = prefs.getInt(KEY_FONT_SIZE, 16); // Mặc định 16 nếu chưa lưu
+    // Sửa phương thức để nhận tham số View
+    protected void applyFontSizeToViews(View rootView) {
+        if (rootView == null) return;
+        float fontSize = getSharedPreferences(PREF_NAME + currentUser, MODE_PRIVATE)
+                .getInt(KEY_FONT_SIZE, DEFAULT_FONT_SIZE);
+        applyFontSizeById(rootView, R.id.questionText, fontSize);
+        applyFontSizeById(rootView, R.id.explanationText, fontSize);
+        // Không áp dụng cho answerText ở đây vì nó nằm trong RecyclerView
+    }
 
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                applyFontSize(viewGroup.getChildAt(i));
-            }
-        } else if (view instanceof TextView) {
+    private void applyFontSizeById(View rootView, int viewId, float fontSize) {
+        View view = rootView.findViewById(viewId);
+        if (view instanceof TextView) {
             ((TextView) view).setTextSize(fontSize);
         }
     }

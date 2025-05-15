@@ -44,7 +44,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, QuestionFragment.OnAnswerSelectedListener {
+public class QuizActivity extends BaseActivity implements TextToSpeech.OnInitListener, QuestionFragment.OnAnswerSelectedListener {
 
     ViewPager2 questionPager;
     QuestionPagerAdapter pagerAdapter;
@@ -55,19 +55,20 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
     LinearLayout questionCounterLayout;
     private LinearLayout questionNumberLayout;
     private RecyclerView questionNumberRecyclerView;
-    private QuestionNumberAdapter questionNumberAdapter;
+    protected QuestionNumberAdapter questionNumberAdapter;
     private Button speakButton;
 
     private int currentQuestionIndex = 0;
-    private List<QuestionDTO> questionList = new ArrayList<>();
-    private List<Integer> questionNumbers = new ArrayList<>();
-    private DatabaseHelper dbHelper;
+    protected List<QuestionDTO> questionList = new ArrayList<>();
+    protected List<Integer> questionNumbers = new ArrayList<>();
+    protected DatabaseHelper dbHelper;
 
     // TextToSpeech components
     private TextToSpeech textToSpeech;
     private SharedPreferences sharedPreferences;
+    private SharedPreferences ttsPreferences;
     private static final int SETTINGS_REQUEST_CODE = 100;
-    private String currentUser;
+    protected String currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +83,8 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         currentUser = appPrefs.getString("current_user", "Guest");
 
         // Khởi tạo SharedPreferences dựa trên current_user
-        sharedPreferences = getSharedPreferences("TTS_Settings_" + currentUser, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("Settings_" + currentUser, MODE_PRIVATE);
+        ttsPreferences = getSharedPreferences("TTS_Settings_" + currentUser, MODE_PRIVATE);
 
         // Initialize TextToSpeech
         textToSpeech = new TextToSpeech(this, this);
@@ -95,20 +97,55 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         boolean isFailingScore = intent.getBooleanExtra("isFailingScore", false);
         String categoryName = intent.getStringExtra("category_name");
 
-        // Nếu là câu hỏi điểm liệt, set titleText ngay lập tức
-        if (isFailingScore && categoryName != null) {
+        // Đặt titleText từ categoryName cho mọi trường hợp
+        if (categoryName != null && !categoryName.isEmpty()) {
             titleText.setText(categoryName);
+        } else {
+            titleText.setText("Không có tiêu đề");
+            Log.w("QuizActivity", "category_name is null or empty in Intent");
         }
 
         // Load danh sách câu hỏi
         loadQuestions(groupId, isFailingScore);
+
+        // Đăng ký listener cho thay đổi TTS settings
+        ttsPreferences.registerOnSharedPreferenceChangeListener(ttsPreferenceChangeListener);
+        Log.d("QuizActivity", "TTS listener registered for user: " + currentUser);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Áp dụng font size cho fragment hiện tại
+        applyFontSizeToCurrentFragment();
     }
 
     @Override
-    public void onAnswerSelected() {
-        // Cập nhật QuestionNumberAdapter khi trạng thái đáp án thay đổi
+    public void onAnswerSelected(int questionId, int position) {
         if (questionNumberAdapter != null) {
-            questionNumberAdapter.notifyItemChanged(currentQuestionIndex);
+            int index = -1;
+            for (int i = 0; i < questionList.size(); i++) {
+                if (questionList.get(i).getId() == questionId) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) {
+                // Cập nhật trạng thái trong userProgressMap
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                String query = "SELECT selectedAnswer, isCorrect FROM UserProgress WHERE userId = ? AND questionId = ?";
+                Cursor cursor = db.rawQuery(query, new String[]{currentUser, String.valueOf(questionId)});
+                if (cursor.moveToFirst()) {
+                    int selectedAnswer = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
+                    boolean isCorrect = cursor.getInt(cursor.getColumnIndexOrThrow("isCorrect")) == 1;
+                    questionNumberAdapter.updateProgress(questionId, selectedAnswer, isCorrect);
+                }
+                cursor.close();
+                db.close();
+                questionNumberAdapter.notifyItemChanged(index);
+                Log.d("QuizActivity", "Notified QuestionNumberAdapter for questionId: " + questionId + ", index: " + index);
+            } else {
+                Log.w("QuizActivity", "QuestionId " + questionId + " not found in questionList");
+            }
         }
     }
 
@@ -209,63 +246,70 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
     }
-
-    private void loadQuestions(int groupId, boolean isFailingScore) {
-        // Kiểm tra xem câu hỏi đã có trong SQLite chưa
+    private void debugCriticalQuestionsInSQLite() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id, groupId, failingScore FROM Questions WHERE failingScore = 1", null);
+        Log.d("QuizActivity", "Critical questions in SQLite: " + cursor.getCount());
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            int groupId = cursor.getInt(cursor.getColumnIndexOrThrow("groupId"));
+            int failingScore = cursor.getInt(cursor.getColumnIndexOrThrow("failingScore"));
+            Log.d("QuizActivity", "Question ID: " + id + ", groupId: " + groupId + ", failingScore: " + failingScore);
+        }
+        cursor.close();
+        db.close();
+    }
+    protected void loadQuestions(int groupId, boolean isFailingScore) {
+        Log.d("QuizActivity", "loadQuestions called with groupId: " + groupId + ", isFailingScore: " + isFailingScore);
+        debugCriticalQuestionsInSQLite();
+        checkCriticalQuestionsInSQLite();
         questionList = loadQuestionsFromSQLite(groupId, isFailingScore);
         if (!questionList.isEmpty()) {
-            // Nếu đã có dữ liệu trong SQLite, sử dụng nó
+            Log.d("QuizActivity", "Loaded questions from SQLite, initializing quiz");
             initializeQuiz();
             return;
         }
 
-        // Nếu chưa có, tải từ API và lưu vào SQLite
+        // Nếu SQLite rỗng, tải từ API
         ApiService apiService = RetrofitClient.getApiService();
         Call<List<QuestionDTO>> call;
 
         if (isFailingScore) {
+            Log.d("QuizActivity", "Calling API for critical questions");
             call = apiService.getCriticalQuestions();
         } else {
+            Log.d("QuizActivity", "Calling API for groupId: " + groupId);
             call = apiService.getQuestionsByGroupId(groupId);
         }
 
         call.enqueue(new Callback<List<QuestionDTO>>() {
             @Override
             public void onResponse(Call<List<QuestionDTO>> call, Response<List<QuestionDTO>> response) {
+                Log.d("QuizActivity", "API Response Code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     questionList = response.body();
+                    Log.d("QuizActivity", "Questions from API: " + questionList.size());
                     if (questionList.isEmpty()) {
-                        Toast.makeText(QuizActivity.this, "Không có câu hỏi nào!", Toast.LENGTH_SHORT).show();
+                        Log.w("QuizActivity", "API returned empty question list");
+                        Toast.makeText(QuizActivity.this, "Không có câu hỏi từ API!", Toast.LENGTH_LONG).show();
                         return;
                     }
-
-                    // Lưu câu hỏi vào SQLite
                     saveQuestionsToSQLite(questionList);
-
-                    // Khởi tạo giao diện quiz
                     initializeQuiz();
                 } else {
+                    Log.e("QuizActivity", "API Error: " + response.message());
                     Toast.makeText(QuizActivity.this, "Lỗi khi lấy dữ liệu: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<QuestionDTO>> call, Throwable t) {
+                Log.e("QuizActivity", "API Failure: " + t.getMessage());
                 Toast.makeText(QuizActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("QuizActivity", "API call failed", t);
             }
         });
     }
-
-    private void initializeQuiz() {
-        // Nếu không phải câu hỏi điểm liệt, set titleText từ groupName của câu hỏi đầu tiên
-        Intent intent = getIntent();
-        boolean isFailingScore = intent.getBooleanExtra("isFailingScore", false);
-        if (!isFailingScore && !questionList.isEmpty()) {
-            QuestionDTO firstQuestion = questionList.get(0);
-            titleText.setText(firstQuestion.getGroupName() != null ? firstQuestion.getGroupName() : "Không có tiêu đề");
-        }
-
+    protected void initializeQuiz() {
         // Cập nhật bộ đếm câu hỏi
         questionCounter.setText("Câu hỏi 1/" + questionList.size());
 
@@ -288,55 +332,78 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         questionPager.setAdapter(pagerAdapter);
     }
 
-    private List<QuestionDTO> loadQuestionsFromSQLite(int groupId, boolean isFailingScore) {
+    protected List<QuestionDTO> loadQuestionsFromSQLite(int groupId, boolean isFailingScore) {
         List<QuestionDTO> questions = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT * FROM Questions WHERE groupId = ? AND failingScore = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(groupId), isFailingScore ? "1" : "0"});
-        while (cursor.moveToNext()) {
-            QuestionDTO question = new QuestionDTO();
-            question.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
-            question.setQuestion(cursor.getString(cursor.getColumnIndexOrThrow("text")));
-            question.setGroupId(cursor.getInt(cursor.getColumnIndexOrThrow("groupId")));
-            question.setFailingScore(cursor.getInt(cursor.getColumnIndexOrThrow("failingScore")) == 1);
-            question.setExplainQuestion(cursor.getString(cursor.getColumnIndexOrThrow("explainQuestion")));
-            question.setAnswer(cursor.getInt(cursor.getColumnIndexOrThrow("answer")));
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            db = dbHelper.getReadableDatabase();
+            String query;
+            String[] selectionArgs;
+            if (isFailingScore) {
+                query = "SELECT * FROM Questions WHERE failingScore = ?";
+                selectionArgs = new String[]{"1"};
+                Log.d("QuizActivity", "Executing query for critical questions: " + query);
+            } else {
+                query = "SELECT * FROM Questions WHERE groupId = ?";
+                selectionArgs = new String[]{String.valueOf(groupId)};
+                Log.d("QuizActivity", "Executing query for groupId: " + groupId + ", query: " + query);
+            }
 
-            // Tải đáp án
-            List<String> options = new ArrayList<>();
-            String answerQuery = "SELECT * FROM Answers WHERE questionId = ? ORDER BY id";
-            Cursor answerCursor = db.rawQuery(answerQuery, new String[]{String.valueOf(question.getId())});
-            while (answerCursor.moveToNext()) {
-                String text = answerCursor.getString(answerCursor.getColumnIndexOrThrow("text"));
-                if (text != null) {
-                    options.add(text);
+            cursor = db.rawQuery(query, selectionArgs);
+            Log.d("QuizActivity", "Cursor count: " + cursor.getCount());
+            while (cursor.moveToNext()) {
+                QuestionDTO question = new QuestionDTO();
+                try {
+                    question.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                    question.setQuestion(cursor.getString(cursor.getColumnIndexOrThrow("text")));
+                    question.setGroupId(cursor.getInt(cursor.getColumnIndexOrThrow("groupId")));
+                    question.setFailingScore(cursor.getInt(cursor.getColumnIndexOrThrow("failingScore")) == 1);
+                    question.setExplainQuestion(cursor.getString(cursor.getColumnIndexOrThrow("explainQuestion")));
+                    question.setAnswer(cursor.getInt(cursor.getColumnIndexOrThrow("answer")));
+                    Log.d("QuizActivity", "Loaded question ID: " + question.getId() + ", failingScore: " + question.isFailingScore());
+
+                    // Tải đáp án
+                    List<String> options = new ArrayList<>();
+                    String answerQuery = "SELECT * FROM Answers WHERE questionId = ? ORDER BY id";
+                    Cursor answerCursor = db.rawQuery(answerQuery, new String[]{String.valueOf(question.getId())});
+                    while (answerCursor.moveToNext()) {
+                        String text = answerCursor.getString(answerCursor.getColumnIndexOrThrow("text"));
+                        if (text != null) {
+                            options.add(text);
+                        }
+                    }
+                    answerCursor.close();
+                    Log.d("QuizActivity", "Loaded " + options.size() + " options for question ID: " + question.getId());
+                    if (options.size() >= 1) question.setOption1(options.get(0));
+                    if (options.size() >= 2) question.setOption2(options.get(1));
+                    if (options.size() >= 3) question.setOption3(options.get(2));
+                    if (options.size() >= 4) question.setOption4(options.get(3));
+
+                    // Tải hình ảnh
+                    String imageQuery = "SELECT imagePath FROM Images WHERE questionId = ?";
+                    Cursor imageCursor = db.rawQuery(imageQuery, new String[]{String.valueOf(question.getId())});
+                    if (imageCursor.moveToFirst()) {
+                        String imagePath = imageCursor.getString(imageCursor.getColumnIndexOrThrow("imagePath"));
+                        question.setImage(imagePath);
+                        Log.d("QuizActivity", "Loaded image path: " + imagePath);
+                    }
+                    imageCursor.close();
+
+                    questions.add(question);
+                } catch (Exception e) {
+                    Log.e("QuizActivity", "Error processing question ID: " + cursor.getInt(cursor.getColumnIndexOrThrow("id")) + ", " + e.getMessage(), e);
                 }
             }
-            answerCursor.close();
-            if (options.size() >= 1) question.setOption1(options.get(0));
-            if (options.size() >= 2) question.setOption2(options.get(1));
-            if (options.size() >= 3) question.setOption3(options.get(2));
-            if (options.size() >= 4) question.setOption4(options.get(3));
-
-            // Tải đường dẫn ảnh
-            String imageQuery = "SELECT imagePath FROM Images WHERE questionId = ?";
-            Cursor imageCursor = db.rawQuery(imageQuery, new String[]{String.valueOf(question.getId())});
-            if (imageCursor.moveToFirst()) {
-                String imagePath = imageCursor.getString(imageCursor.getColumnIndexOrThrow("imagePath"));
-                question.setImage(imagePath);
-                Log.d("QuizActivity", "Loaded image path from SQLite: " + imagePath + " for question " + question.getId());
-            } else {
-                Log.w("QuizActivity", "No image found in SQLite for question " + question.getId());
-            }
-            imageCursor.close();
-
-            questions.add(question);
+        } catch (Exception e) {
+            Log.e("QuizActivity", "loadQuestionsFromSQLite: " + e.getMessage(), e);
+        } finally {
+            if (cursor != null) cursor.close();
+            if (db != null && db.isOpen()) db.close();
         }
-        cursor.close();
-        db.close();
+        Log.d("QuizActivity", "Loaded " + questions.size() + " questions from SQLite, groupId: " + groupId);
         return questions;
     }
-
     private void saveQuestionsToSQLite(List<QuestionDTO> questions) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
@@ -407,11 +474,6 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
 
             // Kiểm tra dữ liệu Base64
-            if (cleanImageData.length() < 100) { // Kiểm tra độ dài tối thiểu để tránh dữ liệu không hợp lệ
-                Log.w("QuizActivity", "Base64 image data too short for question " + questionId + ": " + cleanImageData);
-                return null;
-            }
-
             byte[] decodedBytes = Base64.decode(cleanImageData, Base64.DEFAULT);
             if (decodedBytes == null || decodedBytes.length == 0) {
                 Log.w("QuizActivity", "Failed to decode Base64 image for question " + questionId);
@@ -420,10 +482,10 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
             // Tạo file
             File imageFile = new File(getFilesDir(), "question_" + questionId + ".jpg");
-            FileOutputStream fos = new FileOutputStream(imageFile);
-            fos.write(decodedBytes);
-            fos.flush();
-            fos.close();
+            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                fos.write(decodedBytes);
+                fos.flush();
+            }
 
             // Kiểm tra file có tồn tại không
             if (imageFile.exists()) {
@@ -450,19 +512,20 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (item.getItemId() == R.id.action_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_REQUEST_CODE);
             return true;
-        } else if (item.getItemId() == R.id.action_logout) {
-            SharedPreferences appPrefs = getSharedPreferences("App_Settings", MODE_PRIVATE);
-            SharedPreferences.Editor editor = appPrefs.edit();
-            editor.putString("current_user", "Guest");
-            editor.putBoolean("remember_me", false);
-            editor.remove("saved_email");
-            editor.apply();
-
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Đồng bộ phương thức logout với SettingsActivity
+    public void logout() {
+        SharedPreferences appPrefs = getSharedPreferences("App_Settings", MODE_PRIVATE);
+        appPrefs.edit()
+                .putString("current_user", "Guest")
+                .apply();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -475,8 +538,8 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
 
             // Apply saved TTS settings
-            boolean isDefaultMode = sharedPreferences.getBoolean("isDefaultMode", true);
-            float speed = isDefaultMode ? 1.0f : sharedPreferences.getFloat("speed", 1.0f);
+            boolean isDefaultMode = ttsPreferences.getBoolean("isDefaultMode", true);
+            float speed = isDefaultMode ? 1.0f : ttsPreferences.getFloat("speed", 1.0f);
             textToSpeech.setSpeechRate(speed);
             Log.d("QuizActivity", "TTS initialized, user: " + currentUser + ", speed: " + speed);
         } else {
@@ -513,21 +576,18 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (dbHelper != null) {
             dbHelper.close();
         }
+        // Hủy đăng ký listener
+        if (ttsPreferences != null) {
+            ttsPreferences.unregisterOnSharedPreferenceChangeListener(ttsPreferenceChangeListener);
+            Log.d("QuizActivity", "TTS listener unregistered for user: " + currentUser);
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SETTINGS_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Đọc lại cài đặt từ SharedPreferences
-            boolean isDefaultMode = sharedPreferences.getBoolean("isDefaultMode", true);
-            float speed = isDefaultMode ? 1.0f : sharedPreferences.getFloat("speed", 1.0f);
-
-            // Áp dụng cài đặt mới cho TextToSpeech
-            if (textToSpeech != null) {
-                textToSpeech.setSpeechRate(speed);
-                Log.d("QuizActivity", "Speed applied, user: " + currentUser + ", speed: " + speed);
-            }
+            // Không cần làm gì vì listener đã xử lý
         }
     }
 
@@ -548,9 +608,12 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
         boolean isFailingScore = savedInstanceState.getBoolean("isFailingScore", false);
         String categoryName = savedInstanceState.getString("categoryName", null);
 
-        // Khôi phục titleText nếu có categoryName
-        if (isFailingScore && categoryName != null) {
+        // Khôi phục titleText từ categoryName
+        if (categoryName != null && !categoryName.isEmpty()) {
             titleText.setText(categoryName);
+        } else {
+            titleText.setText("Không có tiêu đề");
+            Log.w("QuizActivity", "categoryName is null or empty in savedInstanceState");
         }
 
         // Tải lại câu hỏi nếu questionList rỗng
@@ -565,4 +628,34 @@ public class QuizActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         }
     }
+    private void applyFontSizeToCurrentFragment() {
+        QuestionFragment fragment = (QuestionFragment) getSupportFragmentManager()
+                .findFragmentByTag("f" + questionPager.getCurrentItem());
+        if (fragment != null && fragment.getView() != null) {
+            applyFontSizeToViews(fragment.getView());
+        }
+    }
+    private void checkCriticalQuestionsInSQLite() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Questions WHERE failingScore = 1", null);
+        int count = cursor.getCount();
+        Log.d("QuizActivity", "Critical questions in SQLite: " + count);
+        cursor.close();
+        db.close();
+    }
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener ttsPreferenceChangeListener =
+            (sharedPreferences, key) -> {
+                Log.d("QuizActivity", "TTS preference changed: " + key + " for user: " + currentUser);
+                if (key.equals("speed") || key.equals("isDefaultMode")) {
+                    if (textToSpeech != null) {
+                        boolean isDefaultMode = ttsPreferences.getBoolean("isDefaultMode", true);
+                        float speed = isDefaultMode ? 1.0f : ttsPreferences.getFloat("speed", 1.0f);
+                        textToSpeech.setSpeechRate(speed);
+                        Log.d("QuizActivity", "TTS speed updated to: " + speed + " for user: " + currentUser);
+                    } else {
+                        Log.w("QuizActivity", "TextToSpeech is null, cannot update speed for user: " + currentUser);
+                    }
+                }
+            };
 }

@@ -1,110 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
+    android:fillViewport="true"
     android:background="#F5F5F5">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cài đặt giọng đọc"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chọn chế độ:"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <RadioGroup
-        android:id="@+id/modeRadioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
-
-        <RadioButton
-            android:id="@+id/defaultModeRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mặc định"
-            android:checked="true"
-            android:layout_marginEnd="16dp" />
-
-        <RadioButton
-            android:id="@+id/customModeRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tùy chỉnh" />
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/speedLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tốc độ:"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
     <LinearLayout
-        android:id="@+id/speedButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Section 1: Giao diện -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giao diện"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cỡ chữ:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#424242"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/fontSizeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="30"
+            android:min="10"
+            android:progress="16"
+            android:layout_marginBottom="16dp"
+            android:thumbTint="#1976D2"
+            android:progressTint="#1976D2" />
+
+        <TextView
+            android:id="@+id/sampleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ví dụ văn bản"
+            android:textSize="16sp"
+            android:textColor="#424242"
+            android:padding="12dp"
+            android:background="#FFFFFF"
+            android:elevation="2dp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Section 2: Giọng đọc -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giọng đọc"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn chế độ:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#424242"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/modeRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/defaultModeRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mặc định"
+                android:checked="true"
+                android:layout_marginEnd="16dp"
+                android:textSize="16sp" />
+
+            <RadioButton
+                android:id="@+id/customModeRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tùy chỉnh"
+                android:textSize="16sp" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/speedLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tốc độ:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#424242"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/speedButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/speed1xButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1x"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/button_speed_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:backgroundTintMode="multiply"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/speed1_5xButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1.5x"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/button_speed_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:backgroundTintMode="multiply"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/speed2xButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2x"
+                android:background="@drawable/button_speed_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:backgroundTintMode="multiply"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Section 3: Tài khoản -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tài khoản"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
 
         <Button
-            android:id="@+id/speed1xButton"
-            android:layout_width="0dp"
+            android:id="@+id/accountButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="1x"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/button_speed_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:backgroundTintMode="multiply" />
+            android:text="Đăng xuất"
+            android:background="@drawable/speak_button_background"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp"
+            android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/speed1_5xButton"
-            android:layout_width="0dp"
+        <!-- Nút lưu và mặc định -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="1.5x"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/button_speed_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:backgroundTintMode="multiply" />
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
 
-        <Button
-            android:id="@+id/speed2xButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="2x"
-            android:background="@drawable/button_speed_selector"
-            android:clickable="true"
-            android:focusable="true"
-            android:backgroundTintMode="multiply" />
+            <Button
+                android:id="@+id/defaultButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Mặc định"
+                android:background="@drawable/speak_button_background"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="8dp"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Lưu"
+                android:background="@drawable/speak_button_background"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lưu"
-        android:background="@drawable/speak_button_background"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp" />
-</LinearLayout>
+</ScrollView>

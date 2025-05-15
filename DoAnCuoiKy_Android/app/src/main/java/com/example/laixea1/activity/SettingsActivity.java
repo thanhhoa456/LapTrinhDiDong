@@ -1,141 +1,165 @@
 package com.example.laixea1.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.laixea1.R;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
-    private RadioGroup modeRadioGroup;
-    private LinearLayout speedButtons;
-    private Button speed1xButton, speed1_5xButton, speed2xButton;
-    private Button saveButton;
+    private SeekBar fontSizeSeekBar;
+    private TextView sampleText;
+    private Button speed1xButton, speed15xButton, speed2xButton;
+    private RadioButton defaultModeRadio, customModeRadio;
+    private TextView speedLabel;
+    private View speedButtons;
+    private Button saveButton, defaultButton;
 
-    private SharedPreferences sharedPreferences;
-    private float selectedSpeed = 1.0f;
-    private boolean isDefaultMode = true;
+    private static final String TTS_PREF_NAME = "TTS_Settings_";
+    private static final String KEY_FONT_SIZE = "fontSize";
+    private static final String KEY_READ_SPEED = "speed";
+    private static final String KEY_MODE = "isDefaultMode";
+    private static final int DEFAULT_FONT_SIZE = 16;
+    private static final float DEFAULT_READ_SPEED = 1.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Kiểm tra Guest
+        if (currentUser.equals("Guest")) {
+            Toast.makeText(this, "Chức năng cài đặt chỉ dành cho người dùng đã đăng nhập!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_settings);
 
-        // Lấy current_user từ App_Settings
-        SharedPreferences appPrefs = getSharedPreferences("App_Settings", MODE_PRIVATE);
-        String currentUser = appPrefs.getString("current_user", "Guest");
-
-        // Khởi tạo SharedPreferences dựa trên current_user
-        sharedPreferences = getSharedPreferences("TTS_Settings_" + currentUser, MODE_PRIVATE);
-
-        // Ánh xạ các thành phần UI
-        modeRadioGroup = findViewById(R.id.modeRadioGroup);
-        speedButtons = findViewById(R.id.speedButtons);
+        // Ánh xạ view
+        fontSizeSeekBar = findViewById(R.id.fontSizeSeekBar);
+        sampleText = findViewById(R.id.sampleText);
         speed1xButton = findViewById(R.id.speed1xButton);
-        speed1_5xButton = findViewById(R.id.speed1_5xButton);
+        speed15xButton = findViewById(R.id.speed1_5xButton);
         speed2xButton = findViewById(R.id.speed2xButton);
+        defaultModeRadio = findViewById(R.id.defaultModeRadio);
+        customModeRadio = findViewById(R.id.customModeRadio);
+        speedLabel = findViewById(R.id.speedLabel);
+        speedButtons = findViewById(R.id.speedButtons);
         saveButton = findViewById(R.id.saveButton);
+        defaultButton = findViewById(R.id.defaultButton);
 
-        // Load saved settings
-        loadSavedSettings();
+        // Load cài đặt
+        loadSettings();
 
-        // Xử lý chế độ
-        modeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.defaultModeRadio) {
-                isDefaultMode = true;
-                speedButtons.setVisibility(View.GONE);
-                findViewById(R.id.speedLabel).setVisibility(View.GONE);
-                selectedSpeed = 1.0f;
-                clearSpeedButtonSelection();
-            } else if (checkedId == R.id.customModeRadio) {
-                isDefaultMode = false;
-                speedButtons.setVisibility(View.VISIBLE);
-                findViewById(R.id.speedLabel).setVisibility(View.VISIBLE);
-                updateSpeedButtonSelection();
+        // Xử lý SeekBar
+        fontSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                sampleText.setTextSize(progress);
             }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        // Xử lý chế độ giọng đọc
+        defaultModeRadio.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            speedLabel.setVisibility(isChecked ? View.GONE : View.VISIBLE);
+            speedButtons.setVisibility(isChecked ? View.GONE : View.VISIBLE);
         });
 
         // Xử lý nút tốc độ
+        final float[] selectedSpeed = {DEFAULT_READ_SPEED};
         speed1xButton.setOnClickListener(v -> {
-            selectedSpeed = 1.0f;
-            updateSpeedButtonSelection();
-            Log.d("SettingsActivity", "1x clicked, selectedSpeed: " + selectedSpeed);
+            selectedSpeed[0] = 1.0f;
+            updateSpeedButtonStates(speed1xButton, speed15xButton, speed2xButton);
         });
-        speed1_5xButton.setOnClickListener(v -> {
-            selectedSpeed = 1.5f;
-            updateSpeedButtonSelection();
-            Log.d("SettingsActivity", "1.5x clicked, selectedSpeed: " + selectedSpeed);
+        speed15xButton.setOnClickListener(v -> {
+            selectedSpeed[0] = 1.5f;
+            updateSpeedButtonStates(speed15xButton, speed1xButton, speed2xButton);
         });
         speed2xButton.setOnClickListener(v -> {
-            selectedSpeed = 2.0f;
-            updateSpeedButtonSelection();
-            Log.d("SettingsActivity", "2x clicked, selectedSpeed: " + selectedSpeed);
+            selectedSpeed[0] = 2.0f;
+            updateSpeedButtonStates(speed2xButton, speed1xButton, speed15xButton);
         });
 
         // Xử lý nút lưu
         saveButton.setOnClickListener(v -> {
-            saveSettings();
-            Toast.makeText(SettingsActivity.this, "Đã lưu cài đặt!", Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
+            SharedPreferences.Editor editor = getSharedPreferences(PREF_NAME + currentUser, MODE_PRIVATE).edit();
+            editor.putInt(KEY_FONT_SIZE, fontSizeSeekBar.getProgress());
+            editor.apply();
+
+            SharedPreferences.Editor ttsEditor = getSharedPreferences(TTS_PREF_NAME + currentUser, MODE_PRIVATE).edit();
+            ttsEditor.putFloat(KEY_READ_SPEED, defaultModeRadio.isChecked() ? DEFAULT_READ_SPEED : selectedSpeed[0]);
+            ttsEditor.putBoolean(KEY_MODE, defaultModeRadio.isChecked());
+            ttsEditor.apply();
+
+            Toast.makeText(this, "Đã lưu cài đặt!", Toast.LENGTH_SHORT).show();
+        });
+
+        // Xử lý nút mặc định
+        defaultButton.setOnClickListener(v -> {
+            fontSizeSeekBar.setProgress(DEFAULT_FONT_SIZE);
+            defaultModeRadio.setChecked(true);
+            selectedSpeed[0] = DEFAULT_READ_SPEED;
+            updateSpeedButtonStates(speed1xButton, speed15xButton, speed2xButton);
+            speedLabel.setVisibility(View.GONE);
+            speedButtons.setVisibility(View.GONE);
+            sampleText.setTextSize(DEFAULT_FONT_SIZE);
+
+            getSharedPreferences(PREF_NAME + currentUser, MODE_PRIVATE).edit().clear().apply();
+            getSharedPreferences(TTS_PREF_NAME + currentUser, MODE_PRIVATE).edit().clear().apply();
+
+            Toast.makeText(this, "Đã đặt lại cài đặt mặc định!", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void loadSavedSettings() {
-        isDefaultMode = sharedPreferences.getBoolean("isDefaultMode", true);
-        selectedSpeed = sharedPreferences.getFloat("speed", 1.0f);
+    private void loadSettings() {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME + currentUser, MODE_PRIVATE);
+        SharedPreferences ttsPrefs = getSharedPreferences(TTS_PREF_NAME + currentUser, MODE_PRIVATE);
+        int fontSize = prefs.getInt(KEY_FONT_SIZE, DEFAULT_FONT_SIZE);
+        float readSpeed = ttsPrefs.getFloat(KEY_READ_SPEED, DEFAULT_READ_SPEED);
+        boolean isDefaultMode = ttsPrefs.getBoolean(KEY_MODE, true);
 
-        // Cập nhật UI dựa trên cài đặt đã lưu
-        if (isDefaultMode) {
-            modeRadioGroup.check(R.id.defaultModeRadio);
-            speedButtons.setVisibility(View.GONE);
-            findViewById(R.id.speedLabel).setVisibility(View.GONE);
-            clearSpeedButtonSelection();
-        } else {
-            modeRadioGroup.check(R.id.customModeRadio);
-            speedButtons.setVisibility(View.VISIBLE);
-            findViewById(R.id.speedLabel).setVisibility(View.VISIBLE);
-            updateSpeedButtonSelection();
+        fontSizeSeekBar.setProgress(fontSize);
+        sampleText.setTextSize(fontSize);
+        defaultModeRadio.setChecked(isDefaultMode);
+        customModeRadio.setChecked(!isDefaultMode);
+        speedLabel.setVisibility(isDefaultMode ? View.GONE : View.VISIBLE);
+        speedButtons.setVisibility(isDefaultMode ? View.GONE : View.VISIBLE);
+
+        if (!isDefaultMode) {
+            if (readSpeed == 1.0f) {
+                updateSpeedButtonStates(speed1xButton, speed15xButton, speed2xButton);
+            } else if (readSpeed == 1.5f) {
+                updateSpeedButtonStates(speed15xButton, speed1xButton, speed2xButton);
+            } else if (readSpeed == 2.0f) {
+                updateSpeedButtonStates(speed2xButton, speed1xButton, speed15xButton);
+            }
         }
-        Log.d("SettingsActivity", "Loaded settings, selectedSpeed: " + selectedSpeed + ", isDefaultMode: " + isDefaultMode);
     }
 
-    private void saveSettings() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isDefaultMode", isDefaultMode);
-        editor.putFloat("speed", selectedSpeed);
-        editor.apply();
+    private void updateSpeedButtonStates(Button selected, Button... others) {
+        selected.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_blue_light));
+        for (Button button : others) {
+            button.setBackgroundTintList(getResources().getColorStateList(android.R.color.transparent));
+        }
     }
 
-    private void updateSpeedButtonSelection() {
-        speed1xButton.setSelected(selectedSpeed == 1.0f);
-        speed1xButton.setActivated(selectedSpeed == 1.0f);
-        speed1_5xButton.setSelected(selectedSpeed == 1.5f);
-        speed1_5xButton.setActivated(selectedSpeed == 1.5f);
-        speed2xButton.setSelected(selectedSpeed == 2.0f);
-        speed2xButton.setActivated(selectedSpeed == 2.0f);
-        Log.d("SettingsActivity", "Updated selection - 1x: " + speed1xButton.isSelected() + "/" + speed1xButton.isActivated() +
-                ", 1.5x: " + speed1_5xButton.isSelected() + "/" + speed1_5xButton.isActivated() +
-                ", 2x: " + speed2xButton.isSelected() + "/" + speed2xButton.isActivated());
-    }
-
-    private void clearSpeedButtonSelection() {
-        speed1xButton.setSelected(false);
-        speed1xButton.setActivated(false);
-        speed1_5xButton.setSelected(false);
-        speed1_5xButton.setActivated(false);
-        speed2xButton.setSelected(false);
-        speed2xButton.setActivated(false);
-        Log.d("SettingsActivity", "Cleared selection - 1x: " + speed1xButton.isSelected() + "/" + speed1xButton.isActivated() +
-                ", 1.5x: " + speed1_5xButton.isSelected() + "/" + speed1_5xButton.isActivated() +
-                ", 2x: " + speed2xButton.isSelected() + "/" + speed2xButton.isActivated());
+    public void logout() {
+        getSharedPreferences("App_Settings", MODE_PRIVATE).edit()
+                .putString("current_user", "Guest")
+                .apply();
+        startActivity(new Intent(this, LoginActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+        finish();
     }
 }

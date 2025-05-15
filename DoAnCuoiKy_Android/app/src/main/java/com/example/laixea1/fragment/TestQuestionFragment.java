@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.laixea1.R;
-import com.example.laixea1.adapter.AnswerAdapter;
+import com.example.laixea1.activity.QuizTestActivity;
+import com.example.laixea1.adapter.TestAnswerAdapter;
+import com.example.laixea1.adapter.TestQuestionNumberAdapter;
 import com.example.laixea1.database.DatabaseHelper;
 import com.example.laixea1.dto.QuestionDTO;
 import com.example.laixea1.entity.Answer;
@@ -31,18 +33,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestionFragment extends Fragment {
+public class TestQuestionFragment extends Fragment {
 
-    protected static final String ARG_QUESTION = "question";
-    protected static final String ARG_QUESTION_ID = "question_id";
-    protected static final String ARG_CURRENT_USER = "current_user";
+    private static final String ARG_QUESTION = "question";
+    private static final String ARG_QUESTION_ID = "questionId";
+    private static final String ARG_CURRENT_USER = "currentUser";
+    private static final String ARG_TEST_ID = "testId";
 
     private QuestionDTO question;
-    private int currentQuestionId;
+    private int questionId;
     private String currentUser;
+    private int testId;
     private DatabaseHelper dbHelper;
     private List<Answer> answerList;
-    private AnswerAdapter answerAdapter;
+    private TestAnswerAdapter answerAdapter;
     private TextView explanationText;
     private OnAnswerSelectedListener answerSelectedListener;
 
@@ -51,15 +55,16 @@ public class QuestionFragment extends Fragment {
     private static final int DEFAULT_FONT_SIZE = 16;
 
     public interface OnAnswerSelectedListener {
-        void onAnswerSelected(int questionId, int position);
+        void onAnswerSelected(int questionId, int selectedAnswer);
     }
 
-    public static QuestionFragment newInstance(QuestionDTO question, int questionId, String currentUser) {
-        QuestionFragment fragment = new QuestionFragment();
+    public static TestQuestionFragment newInstance(QuestionDTO question, int questionId, String currentUser, int testId) {
+        TestQuestionFragment fragment = new TestQuestionFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_QUESTION, question);
         args.putInt(ARG_QUESTION_ID, questionId);
         args.putString(ARG_CURRENT_USER, currentUser);
+        args.putInt(ARG_TEST_ID, testId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,8 +74,9 @@ public class QuestionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             question = (QuestionDTO) getArguments().getSerializable(ARG_QUESTION);
-            currentQuestionId = getArguments().getInt(ARG_QUESTION_ID);
+            questionId = getArguments().getInt(ARG_QUESTION_ID);
             currentUser = getArguments().getString(ARG_CURRENT_USER);
+            testId = getArguments().getInt(ARG_TEST_ID);
         }
         dbHelper = new DatabaseHelper(getContext());
     }
@@ -85,41 +91,52 @@ public class QuestionFragment extends Fragment {
         RecyclerView answerRecyclerView = view.findViewById(R.id.answerRecyclerView);
         explanationText = view.findViewById(R.id.explanationText);
 
-        // Áp dụng font size cho questionText và explanationText
+        // Apply font size
         float fontSize = getContext().getSharedPreferences(PREF_NAME + currentUser, Context.MODE_PRIVATE)
                 .getInt(KEY_FONT_SIZE, DEFAULT_FONT_SIZE);
         questionText.setTextSize(fontSize);
         explanationText.setTextSize(fontSize);
-        Log.d("QuestionFragment", "Applied fontSize " + fontSize + " to questionText and explanationText");
+        Log.d("TestQuestionFragment", "Applied fontSize " + fontSize + " to questionText and explanationText");
 
-        Log.d("QuestionFragment", "Current Question ID: " + currentQuestionId);
+        boolean isReviewMode = getActivity() instanceof QuizTestActivity && ((QuizTestActivity) getActivity()).isReviewMode();
+
+        if (isReviewMode && question != null && question.getExplainQuestion() != null && !question.getExplainQuestion().isEmpty()) {
+            explanationText.setText(question.getExplainQuestion());
+            explanationText.setVisibility(View.VISIBLE);
+            Log.d("TestQuestionFragment", "Showing explanation for question " + questionId);
+        } else {
+            explanationText.setVisibility(View.GONE);
+            Log.d("TestQuestionFragment", "Hiding explanation for question " + questionId);
+        }
+
+        Log.d("TestQuestionFragment", "Current Question ID: " + questionId + ", isReviewMode: " + isReviewMode);
 
         if (question != null && question.getQuestion() != null) {
             questionText.setText(question.getQuestion());
         } else {
             questionText.setText("Không có nội dung câu hỏi");
-            Log.w("QuestionFragment", "Question text is null for question " + currentQuestionId);
+            Log.w("TestQuestionFragment", "Question text is null for question " + questionId);
         }
 
         if (question != null && question.getImage() != null && !question.getImage().isEmpty()) {
-            Log.d("QuestionFragment", "Attempting to load image: " + question.getImage() + " for question " + currentQuestionId);
+            Log.d("TestQuestionFragment", "Attempting to load image: " + question.getImage() + " for question " + questionId);
             File imageFile = new File(question.getImage());
             if (imageFile.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
                 if (bitmap != null) {
                     questionImage.setImageBitmap(bitmap);
                     questionImage.setVisibility(View.VISIBLE);
-                    Log.d("QuestionFragment", "Image loaded successfully: " + question.getImage());
+                    Log.d("TestQuestionFragment", "Image loaded successfully: " + question.getImage());
                 } else {
-                    Log.w("QuestionFragment", "Failed to decode bitmap from file: " + question.getImage());
+                    Log.w("TestQuestionFragment", "Failed to decode bitmap from file: " + question.getImage());
                     questionImage.setVisibility(View.GONE);
                 }
             } else {
-                Log.w("QuestionFragment", "Image file not found: " + question.getImage());
+                Log.w("TestQuestionFragment", "Image file not found: " + question.getImage());
                 questionImage.setVisibility(View.GONE);
             }
         } else {
-            Log.d("QuestionFragment", "No image available for question " + currentQuestionId);
+            Log.d("TestQuestionFragment", "No image available for question " + questionId);
             questionImage.setVisibility(View.GONE);
         }
 
@@ -131,56 +148,23 @@ public class QuestionFragment extends Fragment {
             if (question.getOption3() != null && !question.getOption3().isEmpty()) options.add(question.getOption3());
             if (question.getOption4() != null && !question.getOption4().isEmpty()) options.add(question.getOption4());
 
-            Log.d("QuestionFragment", "Number of options for question " + currentQuestionId + ": " + options.size());
-            int correctAnswerIndex = question.getAnswer() - 1;
+            Log.d("TestQuestionFragment", "Number of options for question " + questionId + ": " + options.size());
             for (int i = 0; i < options.size(); i++) {
-                boolean isCorrect = (i == correctAnswerIndex && correctAnswerIndex < options.size());
-                answerList.add(new Answer(options.get(i), isCorrect));
+                answerList.add(new Answer(options.get(i), false));
             }
         } else {
-            Log.w("QuestionFragment", "Question is null for question " + currentQuestionId);
+            Log.w("TestQuestionFragment", "Question is null for question " + questionId);
         }
-
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT selectedAnswer, isCorrect FROM UserProgress WHERE userId = ? AND questionId = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{currentUser, String.valueOf(currentQuestionId)});
-        if (cursor.moveToFirst()) {
-            int selectedAnswerIndex = cursor.getInt(cursor.getColumnIndexOrThrow("selectedAnswer"));
-            int isCorrect = cursor.getInt(cursor.getColumnIndexOrThrow("isCorrect"));
-            if (selectedAnswerIndex >= 0 && selectedAnswerIndex < answerList.size()) {
-                boolean answerIsCorrect = answerList.get(selectedAnswerIndex).isCorrect();
-                if (isCorrect != (answerIsCorrect ? 1 : 0)) {
-                    Log.w("QuestionFragment", "Inconsistent isCorrect for questionId=" + currentQuestionId +
-                            ": SQLite isCorrect=" + isCorrect + ", answerList isCorrect=" + answerIsCorrect);
-                    ContentValues values = new ContentValues();
-                    values.put("userId", currentUser);
-                    values.put("questionId", currentQuestionId);
-                    values.put("selectedAnswer", selectedAnswerIndex);
-                    values.put("isCorrect", answerIsCorrect ? 1 : 0);
-                    values.put("timestamp", System.currentTimeMillis());
-                    db.delete("UserProgress", "userId = ? AND questionId = ?",
-                            new String[]{currentUser, String.valueOf(currentQuestionId)});
-                    db.insert("UserProgress", null, values);
-                    Log.d("QuestionFragment", "Fixed inconsistent SQLite data: questionId=" + currentQuestionId +
-                            ", selectedAnswer=" + selectedAnswerIndex + ", isCorrect=" + answerIsCorrect);
-                }
-                answerList.get(selectedAnswerIndex).setSelected(true);
-                Log.d("QuestionFragment", "Restored selected answer: " + selectedAnswerIndex);
-            } else {
-                Log.w("QuestionFragment", "Invalid selectedAnswerIndex: " + selectedAnswerIndex + " for question " + currentQuestionId);
-                db.delete("UserProgress", "userId = ? AND questionId = ?",
-                        new String[]{currentUser, String.valueOf(currentQuestionId)});
-            }
-        } else {
-            Log.d("QuestionFragment", "No answer state found in SQLite for questionId=" + currentQuestionId);
-        }
-        cursor.close();
-        db.close();
 
         answerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        answerAdapter = new AnswerAdapter(getContext(), R.layout.item_answer, answerList,
-                question != null ? question.getExplainQuestion() : null,
-                explanationText, currentQuestionId, currentUser, dbHelper, answerSelectedListener);
+        // Retrieve TestQuestionNumberAdapter from QuizTestActivity
+        TestQuestionNumberAdapter questionNumberAdapter = null;
+        if (getActivity() instanceof QuizTestActivity) {
+            questionNumberAdapter = ((QuizTestActivity) getActivity()).getTestQuestionNumberAdapter();
+        }
+        answerAdapter = new TestAnswerAdapter(getContext(), answerList, questionId, currentUser, testId,
+                answerSelectedListener, dbHelper, questionNumberAdapter);
+        answerAdapter.setReviewMode(isReviewMode);
         answerRecyclerView.setAdapter(answerAdapter);
 
         return view;

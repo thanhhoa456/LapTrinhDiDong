@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_logout"
-        android:title="Đăng xuất"
+        android:id="@+id/action_settings"
+        android:title="Cài đặt"
         app:showAsAction="never" />
 </menu>
