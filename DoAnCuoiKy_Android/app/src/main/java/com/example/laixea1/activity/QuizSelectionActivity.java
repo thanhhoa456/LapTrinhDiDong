@@ -1,5 +1,7 @@
 package com.example.laixea1.activity;
 
+import static com.example.laixea1.activity.QuizActivity.SETTINGS_REQUEST_CODE;
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,8 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -118,6 +122,20 @@ public class QuizSelectionActivity extends AppCompatActivity {
                 Toast.makeText(QuizSelectionActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.quiz_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_REQUEST_CODE);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateCategoriesWithTests() {

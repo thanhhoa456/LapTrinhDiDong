@@ -67,7 +67,7 @@ public class QuizActivity extends BaseActivity implements TextToSpeech.OnInitLis
     private TextToSpeech textToSpeech;
     private SharedPreferences sharedPreferences;
     private SharedPreferences ttsPreferences;
-    private static final int SETTINGS_REQUEST_CODE = 100;
+    protected static final int SETTINGS_REQUEST_CODE = 100;
     protected String currentUser;
 
     @Override

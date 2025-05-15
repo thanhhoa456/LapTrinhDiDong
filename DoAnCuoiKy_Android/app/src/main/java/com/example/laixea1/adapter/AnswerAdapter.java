@@ -233,7 +233,7 @@ public class AnswerAdapter extends RecyclerView.Adapter<AnswerAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return Math.max(answerList.size(), 4);
+        return Math.max(answerList.size(), 2);
     }
 
     public void releaseMediaPlayers() {

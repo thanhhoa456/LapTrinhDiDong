@@ -1,5 +1,6 @@
 package com.example.laixea1.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,9 @@ import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+
 import com.example.laixea1.R;
 
 public class SettingsActivity extends BaseActivity {
@@ -19,7 +23,7 @@ public class SettingsActivity extends BaseActivity {
     private RadioButton defaultModeRadio, customModeRadio;
     private TextView speedLabel;
     private View speedButtons;
-    private Button saveButton, defaultButton;
+    private Button saveButton, defaultButton, accountButton;
 
     private static final String TTS_PREF_NAME = "TTS_Settings_";
     private static final String KEY_FONT_SIZE = "fontSize";
@@ -34,10 +38,33 @@ public class SettingsActivity extends BaseActivity {
 
         // Kiểm tra Guest
         if (currentUser.equals("Guest")) {
-            Toast.makeText(this, "Chức năng cài đặt chỉ dành cho người dùng đã đăng nhập!", Toast.LENGTH_SHORT).show();
-            finish();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Yêu cầu đăng nhập");
+            builder.setMessage("Chức năng cài đặt chỉ dành cho người dùng đã đăng nhập. Bạn có muốn đăng nhập ngay không?");
+
+            builder.setPositiveButton("Đăng nhập", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish(); // nếu muốn thoát khỏi activity hiện tại
+                }
+            });
+
+            builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    finish(); // hoặc không finish() nếu muốn quay lại
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
             return;
         }
+
 
         setContentView(R.layout.activity_settings);
 
@@ -53,6 +80,7 @@ public class SettingsActivity extends BaseActivity {
         speedButtons = findViewById(R.id.speedButtons);
         saveButton = findViewById(R.id.saveButton);
         defaultButton = findViewById(R.id.defaultButton);
+        accountButton = findViewById(R.id.accountButton);
 
         // Load cài đặt
         loadSettings();
@@ -120,6 +148,14 @@ public class SettingsActivity extends BaseActivity {
 
             Toast.makeText(this, "Đã đặt lại cài đặt mặc định!", Toast.LENGTH_SHORT).show();
         });
+        accountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void loadSettings() {
@@ -162,4 +198,5 @@ public class SettingsActivity extends BaseActivity {
                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         finish();
     }
+
 }
