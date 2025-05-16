@@ -31,25 +31,31 @@ Nguyễn Thị Nỡ_22110392
 ---
 
 ## ⚙️ Chức năng chính
-1. Đăng ký và đăng nhập
+## 1. Đăng ký và đăng nhập
+   
 Người dùng có thể đăng ký tài khoản bằng email và mật khẩu. Sau khi đăng ký, mã OTP sẽ được gửi tới email để xác thực tài khoản. Ngoài ra, người dùng có thể đặt lại mật khẩu nếu quên, cũng thông qua mã OTP gửi qua email.
 
-2. Học lý thuyết
+## 2. Học lý thuyết
+   
 Cung cấp toàn bộ nội dung lý thuyết ôn thi bằng lái xe A1, được chia theo từng chương và từng chủ đề cụ thể, giúp người dùng học dễ dàng và hệ thống hơn.
 
-3. Thi sát hạch
+## 3. Thi sát hạch
+   
 Mô phỏng bài thi sát hạch lý thuyết như kỳ thi thật, có giới hạn thời gian và hệ thống sẽ tự động chấm điểm sau khi nộp bài.
 
-4. Học biển báo
+## 4. Học biển báo
+   
 Tổng hợp đầy đủ các loại biển báo giao thông (biển cấm, biển nguy hiểm, biển hiệu lệnh, biển chỉ dẫn…), kèm hình ảnh minh họa và giải thích chi tiết cho từng loại.
 
-5. Xem mẹo thi
+## 5. Xem mẹo thi
+    
 Cung cấp các mẹo làm bài, mẹo ghi nhớ lý thuyết và biển báo nhanh chóng, giúp tăng khả năng làm bài đúng và đạt điểm cao trong kỳ thi thật.
 
-6. Làm lại các câu sai
+## 6. Làm lại các câu sai
+    
 Hệ thống sẽ tự động ghi nhớ các câu hỏi người dùng đã trả lời sai và cho phép người dùng ôn tập lại những câu này nhằm cải thiện kết quả.
 
-7. Cài đặt
+## 7. Cài đặt
 Cho phép người dùng thay đổi các thiết lập cá nhân như tốc độ đọc, cỡ chữ, màu nền... giúp tăng trải nghiệm học tập.
 
 
